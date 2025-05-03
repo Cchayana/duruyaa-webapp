@@ -14,9 +14,13 @@ try {
   console.log('Telegram user ID:', userId);
 } catch (e) {
   console.error('Telegram WebApp not available:', e);
-} catch (e) {
-      console.log('Telegram not available, using test user');
-    }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  if (!userId) {
+    document.getElementById("user-id-display").textContent = "⚠️ Не удалось получить user ID. Открой WebApp через Telegram.";
+  }
+});
 
     const audio = new Audio();
 
