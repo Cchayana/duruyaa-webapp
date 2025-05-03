@@ -13,7 +13,12 @@
       const response = await fetch('modules.json');
       const modules = await response.json();
 
-      const userId = Telegram.WebApp.initDataUnsafe.user?.id || 'test_user';
+      let userId = 'test_user';
+      try {
+        userId = Telegram.WebApp.initDataUnsafe?.user?.id || 'test_user';
+      } catch (e) {
+        console.log('Telegram WebApp not available, using test user');
+      }
       const access = await (await fetch('access.json')).json();
 
       const module = modules.find(m => m.id === 'basic');
