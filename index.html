@@ -9,18 +9,27 @@
     let current = 0;
     let modules = [];
     let userId;
-try {
-  userId = Telegram.WebApp.initDataUnsafe?.user?.id;
-  console.log('Telegram user ID:', userId);
-} catch (e) {
-  console.error('Telegram WebApp not available:', e);
-}
+    
+    const initData = Telegram.WebApp.initData;
 
-window.addEventListener("DOMContentLoaded", () => {
-  if (!userId) {
-    document.getElementById("user-id-display").textContent = "⚠️ Не удалось получить user ID. Открой WebApp через Telegram.";
-  }
-});
+    fetch("http://localhost:5000/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        userId = data.user_id;
+        loadModules();
+      } else {
+        document.getElementById("user-id-display").textContent = "❌ Ошибка авторизации: " + data.error;
+      }
+    })
+    .catch(err => {
+      document.getElementById("user-id-display").textContent = "❌ Ошибка подключения к серверу: " + err.message;
+    });
+
 
     const audio = new Audio();
 
