@@ -116,6 +116,10 @@ document.getElementById("audio-btn").disabled = !card.audio;
       overflow: hidden;
       height: 100%;
       touch-action: manipulation;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
+      position: fixed;
+      width: 100%;
     }
     body {
       font-family: sans-serif;
