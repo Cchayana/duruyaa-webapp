@@ -8,11 +8,13 @@
     let cards = [];
     let current = 0;
     let modules = [];
-    let userId = 'test_user';
-
-    try {
-      userId = Telegram.WebApp.initDataUnsafe?.user?.id || 'test_user';
-    } catch (e) {
+    let userId;
+try {
+  userId = Telegram.WebApp.initDataUnsafe?.user?.id;
+  console.log('Telegram user ID:', userId);
+} catch (e) {
+  console.error('Telegram WebApp not available:', e);
+} catch (e) {
       console.log('Telegram not available, using test user');
     }
 
@@ -61,6 +63,7 @@
   const access = await accessRes.json();
   showModuleList(access);
 }
+    }
 
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -77,6 +80,7 @@
       document.getElementById("card-back").textContent = card.ru;
       cardEl.classList.remove("flipped");
       audio.src = card.audio || '';
+document.getElementById("audio-btn").disabled = !card.audio;
       document.getElementById("progress").textContent = `${current + 1} / ${cards.length}`;
     }
 

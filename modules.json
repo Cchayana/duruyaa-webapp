@@ -33,16 +33,39 @@
   {
     "id": "pronouns",
     "name": "Местоимения",
-    "cards": []
+    "cards": [
+          {
+        "tuva": "үргүлчү",
+        "ru": "регулярно",
+        "audio": "audio/urgulchu.wav"
+      },
+      {
+        "tuva": "салдар",
+        "ru": "влияние",
+        "audio": "audio/saldar.wav"
+      }
+    ]
   },
   {
     "id": "numbers",
     "name": "Числа",
-    "cards": []
+    "cards": [
+            {
+        "tuva": "салдар",
+        "ru": "влияние",
+        "audio": "audio/saldar.wav"
+      }
+    ]
   },
   {
     "id": "verbs",
     "name": "Глаголы",
-    "cards": []
+    "cards": [
+            {
+        "tuva": "салдар",
+        "ru": "влияние",
+        "audio": "audio/saldar.wav"
+      }
+    ]
   }
 ]
