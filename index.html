@@ -38,7 +38,8 @@ window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("module-list").style.display = 'block';
       document.getElementById("card-view").style.display = 'none';
 
-      document.getElementById("user-id-display").textContent = `Ваш user ID: ${userId}`;
+      const debug = JSON.stringify(Telegram.WebApp.initDataUnsafe, null, 2);
+document.getElementById("user-id-display").textContent = debug;
 
       const list = document.getElementById("modules");
       list.innerHTML = '';
