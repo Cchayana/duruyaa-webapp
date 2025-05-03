@@ -7,24 +7,57 @@
   <script defer>
     let cards = [];
     let current = 0;
+    let modules = [];
+    let userId = 'test_user';
+
+    try {
+      userId = Telegram.WebApp.initDataUnsafe?.user?.id || 'test_user';
+    } catch (e) {
+      console.log('Telegram not available, using test user');
+    }
+
     const audio = new Audio();
 
-    async function loadCards() {
-      const response = await fetch('modules.json');
-      const modules = await response.json();
+    async function loadModules() {
+      const res = await fetch('modules.json');
+      modules = await res.json();
 
-      let userId = 'test_user';
-      try {
-        userId = Telegram.WebApp.initDataUnsafe?.user?.id || 'test_user';
-      } catch (e) {
-        console.log('Telegram WebApp not available, using test user');
-      }
-      const access = await (await fetch('access.json')).json();
+      const accessRes = await fetch('access.json');
+      const access = await accessRes.json();
 
-      const module = modules.find(m => m.id === 'basic');
-      cards = module.cards || [];
+      showModuleList(access);
+    }
+
+    function showModuleList(access) {
+      document.getElementById("module-list").style.display = 'block';
+      document.getElementById("card-view").style.display = 'none';
+
+      const list = document.getElementById("modules");
+      list.innerHTML = '';
+      const allowed = new Set((access[userId] || []).concat(access["all"] || []));
+
+      modules.forEach(module => {
+        const btn = document.createElement("button");
+        btn.textContent = allowed.has(module.id) ? module.name : module.name + " 🔒";
+        btn.disabled = !allowed.has(module.id);
+        btn.onclick = () => enterModule(module.id);
+        list.appendChild(btn);
+      });
+    }
+
+    function enterModule(moduleId) {
+      const module = modules.find(m => m.id === moduleId);
+      if (!module || !module.cards) return;
+      cards = [...module.cards];
       shuffle(cards);
+      current = 0;
       showCard();
+      document.getElementById("module-list").style.display = 'none';
+      document.getElementById("card-view").style.display = 'flex';
+    }
+
+    function exitModule() {
+      showModuleList({ [userId]: [] }); // refresh from local
     }
 
     function shuffle(array) {
@@ -35,7 +68,7 @@
     }
 
     function showCard() {
-      if (cards.length === 0) return;
+      if (!cards.length) return;
       const card = cards[current];
       document.getElementById("card-front").textContent = card.tuva;
       document.getElementById("card-back").textContent = card.ru;
@@ -56,7 +89,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      loadCards();
+      loadModules();
 
       document.getElementById("card").onclick = () => {
         document.getElementById("card").classList.toggle("flipped");
@@ -65,9 +98,7 @@
       document.getElementById("next-btn").onclick = nextCard;
       document.getElementById("learned-btn").onclick = markLearned;
       document.getElementById("audio-btn").onclick = () => audio.play();
-      document.getElementById("back-btn").onclick = () => {
-        alert('Здесь будет возврат к списку модулей');
-      };
+      document.getElementById("back-btn").onclick = exitModule;
     });
   </script>
   <style>
@@ -80,6 +111,23 @@
       background: #f3f4f6;
       padding: 20px;
       box-sizing: border-box;
+    }
+    #card-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    #module-list {
+      display: block;
+      max-width: 320px;
+      text-align: center;
+    }
+    #modules button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
     }
     .top-bar {
       width: 100%;
@@ -137,25 +185,36 @@
       color: white;
       cursor: pointer;
     }
-    button:hover {
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
       background: #2563eb;
     }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <button id="back-btn">❌</button>
-    <button id="audio-btn">🔊 Слушать</button>
+  <div id="module-list">
+    <h2>Выбери модуль</h2>
+    <div id="modules"></div>
   </div>
-  <div class="card" id="card">
-    <div class="card-inner">
-      <div class="card-face" id="card-front"></div>
-      <div class="card-face card-back" id="card-back"></div>
+
+  <div id="card-view">
+    <div class="top-bar">
+      <button id="back-btn">❌</button>
+      <button id="audio-btn">🔊 Слушать</button>
     </div>
-  </div>
-  <div class="bottom-controls">
-    <button id="learned-btn">✅ Выучено</button>
-    <button id="next-btn">➡ Далее</button>
+    <div class="card" id="card">
+      <div class="card-inner">
+        <div class="card-face" id="card-front"></div>
+        <div class="card-face card-back" id="card-back"></div>
+      </div>
+    </div>
+    <div class="bottom-controls">
+      <button id="learned-btn">✅ Выучено</button>
+      <button id="next-btn">➡ Далее</button>
+    </div>
   </div>
 </body>
 </html>
