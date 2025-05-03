@@ -34,6 +34,8 @@ try {
       document.getElementById("module-list").style.display = 'block';
       document.getElementById("card-view").style.display = 'none';
 
+      document.getElementById("user-id-display").textContent = `Ваш user ID: ${userId}`;
+
       const list = document.getElementById("modules");
       list.innerHTML = '';
       const allowed = new Set((access[userId] || []).concat(access["all"] || []));
@@ -226,6 +228,7 @@ document.getElementById("audio-btn").disabled = !card.audio;
 </head>
 <body>
   <div id="module-list">
+    <p id="user-id-display" style="font-size: 12px; color: gray;"></p>
     <h2>Выбери модуль</h2>
     <div id="modules"></div>
   </div>
