@@ -57,7 +57,7 @@
     }
 
     function exitModule() {
-      showModuleList({ [userId]: [] }); // refresh from local
+      showModuleList({ [userId]: [] });
     }
 
     function shuffle(array) {
@@ -70,10 +70,13 @@
     function showCard() {
       if (!cards.length) return;
       const card = cards[current];
+      const cardEl = document.getElementById("card");
       document.getElementById("card-front").textContent = card.tuva;
       document.getElementById("card-back").textContent = card.ru;
-      document.getElementById("card").classList.remove("flipped");
+      cardEl.classList.remove("flipped");
+      cardEl.classList.remove("animate-out-left", "animate-out-right");
       audio.src = card.audio || '';
+      document.getElementById("progress").textContent = `${current + 1} / ${cards.length}`;
     }
 
     function nextCard() {
@@ -91,12 +94,44 @@
     window.addEventListener("DOMContentLoaded", () => {
       loadModules();
 
-      document.getElementById("card").onclick = () => {
-        document.getElementById("card").classList.toggle("flipped");
+      const cardEl = document.getElementById("card");
+      let startX = 0;
+
+      cardEl.addEventListener("touchstart", e => {
+        startX = e.touches[0].clientX;
+        cardEl.classList.add("swiping");
+      });
+
+      cardEl.addEventListener("touchmove", e => {
+        const currentX = e.touches[0].clientX;
+        const diffX = currentX - startX;
+        cardEl.style.transform = `translateX(${diffX}px)`;
+      });
+
+      cardEl.addEventListener("touchend", e => {
+        const endX = e.changedTouches[0].clientX;
+        const diffX = endX - startX;
+
+        cardEl.classList.remove("swiping");
+        cardEl.style.transform = "";
+
+        if (diffX > 50) {
+          cardEl.classList.add("animate-out-right");
+          setTimeout(() => {
+            markLearned();
+          }, 300);
+        } else if (diffX < -50) {
+          cardEl.classList.add("animate-out-left");
+          setTimeout(() => {
+            nextCard();
+          }, 300);
+        }
+      });
+
+      cardEl.onclick = () => {
+        cardEl.classList.toggle("flipped");
       };
 
-      document.getElementById("next-btn").onclick = nextCard;
-      document.getElementById("learned-btn").onclick = markLearned;
       document.getElementById("audio-btn").onclick = () => audio.play();
       document.getElementById("back-btn").onclick = exitModule;
     });
@@ -131,18 +166,38 @@
     }
     .top-bar {
       width: 100%;
-      max-width: 320px;
+      max-width: 400px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
     }
+    #progress {
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: #4b5563;
+    }
     .card {
-      width: 300px;
-      height: 200px;
+      width: 90vw;
+      max-width: 400px;
+      height: 60vh;
       perspective: 1000px;
       margin: 10px 0;
       cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .card.swiping {
+      transition: none;
+    }
+    .card.animate-out-left {
+      transform: translateX(-400px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .card.animate-out-right {
+      transform: translateX(400px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
     .card-inner {
       width: 100%;
@@ -169,13 +224,6 @@
     }
     .card-back {
       transform: rotateY(180deg);
-    }
-    .bottom-controls {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 300px;
-      margin-top: 10px;
     }
     button {
       padding: 10px 15px;
@@ -205,15 +253,12 @@
       <button id="back-btn">❌</button>
       <button id="audio-btn">🔊 Слушать</button>
     </div>
+    <div id="progress"></div>
     <div class="card" id="card">
       <div class="card-inner">
         <div class="card-face" id="card-front"></div>
         <div class="card-face card-back" id="card-back"></div>
       </div>
-    </div>
-    <div class="bottom-controls">
-      <button id="learned-btn">✅ Выучено</button>
-      <button id="next-btn">➡ Далее</button>
     </div>
   </div>
 </body>
