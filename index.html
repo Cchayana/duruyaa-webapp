@@ -56,8 +56,11 @@
       document.getElementById("card-view").style.display = 'flex';
     }
 
-    function exitModule() {
-      showModuleList({ [userId]: [] });
+    async function exitModule() {
+  const accessRes = await fetch('access.json');
+  const access = await accessRes.json();
+  showModuleList(access);
+});
     }
 
     function shuffle(array) {
