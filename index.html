@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тувинские карточки</title>
+  <script defer>
+    let cards = [];
+    let current = 0;
+    const audio = new Audio();
+
+    async function loadCards() {
+      const response = await fetch('modules.json');
+      const modules = await response.json();
+
+      const userId = Telegram.WebApp.initDataUnsafe.user?.id || 'test_user';
+      const access = await (await fetch('access.json')).json();
+
+      const module = modules.find(m => m.id === 'basic');
+      cards = module.cards || [];
+      shuffle(cards);
+      showCard();
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function showCard() {
+      if (cards.length === 0) return;
+      const card = cards[current];
+      document.getElementById("card-front").textContent = card.tuva;
+      document.getElementById("card-back").textContent = card.ru;
+      document.getElementById("card").classList.remove("flipped");
+      audio.src = card.audio || '';
+    }
+
+    function nextCard() {
+      current = (current + 1) % cards.length;
+      showCard();
+    }
+
+    function markLearned() {
+      const learned = JSON.parse(localStorage.getItem("learned") || "[]");
+      learned.push(cards[current].tuva);
+      localStorage.setItem("learned", JSON.stringify([...new Set(learned)]));
+      nextCard();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadCards();
+
+      document.getElementById("card").onclick = () => {
+        document.getElementById("card").classList.toggle("flipped");
+      };
+
+      document.getElementById("next-btn").onclick = nextCard;
+      document.getElementById("learned-btn").onclick = markLearned;
+      document.getElementById("audio-btn").onclick = () => audio.play();
+      document.getElementById("back-btn").onclick = () => {
+        alert('Здесь будет возврат к списку модулей');
+      };
+    });
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      background: #f3f4f6;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .top-bar {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .card {
+      width: 300px;
+      height: 200px;
+      perspective: 1000px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: white;
+      backface-visibility: hidden;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+    }
+    .bottom-controls {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <button id="back-btn">❌</button>
+    <button id="audio-btn">🔊 Слушать</button>
+  </div>
+  <div class="card" id="card">
+    <div class="card-inner">
+      <div class="card-face" id="card-front"></div>
+      <div class="card-face card-back" id="card-back"></div>
+    </div>
+  </div>
+  <div class="bottom-controls">
+    <button id="learned-btn">✅ Выучено</button>
+    <button id="next-btn">➡ Далее</button>
+  </div>
+</body>
+</html>

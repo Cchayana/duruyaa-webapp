@@ -1,0 +1,48 @@
+[
+  {
+    "id": "basic",
+    "name": "Слово дня",
+    "cards": [
+      {
+        "tuva": "тура-соруктуг",
+        "ru": "волевой",
+        "audio": "audio/tura.wav"
+      },
+      {
+        "tuva": "тускай",
+        "ru": "особенный",
+        "audio": "audio/tuskai.wav"
+      },
+      {
+        "tuva": "харыысалгалыг",
+        "ru": "ответственный",
+        "audio": "audio/haryysalgalyg.wav"
+      },
+      {
+        "tuva": "үргүлчү",
+        "ru": "регулярно",
+        "audio": "audio/urgulchu.wav"
+      },
+      {
+        "tuva": "салдар",
+        "ru": "влияние",
+        "audio": "audio/saldar.wav"
+      }
+    ]
+  },
+  {
+    "id": "pronouns",
+    "name": "Местоимения",
+    "cards": []
+  },
+  {
+    "id": "numbers",
+    "name": "Числа",
+    "cards": []
+  },
+  {
+    "id": "verbs",
+    "name": "Глаголы",
+    "cards": []
+  }
+]
