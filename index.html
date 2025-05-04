@@ -9,27 +9,26 @@
     let current = 0;
     let modules = [];
     let userId;
-    
-    const initData = Telegram.WebApp.initData;
+const initData = Telegram.WebApp.initData;
 
-    fetch("https://126d-194-233-63-59.ngrok-free.app/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ initData })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.ok) {
-        userId = data.user_id;
-        loadModules();
-      } else {
-        document.getElementById("user-id-display").textContent = "❌ Ошибка авторизации: " + data.error;
-      }
-    })
-    .catch(err => {
-      document.getElementById("user-id-display").textContent = "❌ Ошибка подключения к серверу: " + err.message;
-    });
-
+fetch("https://126d-194-233-63-59.ngrok-free.app/auth", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ initData })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.ok) {
+    userId = data.user_id;
+    loadModules();
+  } else {
+    document.getElementById("user-id-display").textContent = "❌ Ошибка авторизации: " + data.error;
+  }
+})
+.catch(err => {
+  document.getElementById("user-id-display").textContent = "❌ Ошибка подключения к серверу: " + err.message + "
+initData: " + initData;
+});
 
     const audio = new Audio();
 
