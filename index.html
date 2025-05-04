@@ -26,8 +26,8 @@ fetch("https://126d-194-233-63-59.ngrok-free.app/auth", {
   }
 })
 .catch(err => {
-  document.getElementById("user-id-display").textContent = "❌ Ошибка подключения к серверу: " + err.message + "
-initData: " + initData;
+  document.getElementById("user-id-display").textContent = `❌ Ошибка подключения к серверу: ${err.message}
+initData: ${initData}`;
 });
 
     const audio = new Audio();
