@@ -16,13 +16,21 @@ fetch("https://126d-194-233-63-59.ngrok-free.app/auth", {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ initData })
 })
-.then(res => res.json())
-.then(data => {
-  if (data.ok) {
-    userId = data.user_id;
-    loadModules();
-  } else {
-    document.getElementById("user-id-display").textContent = "❌ Ошибка авторизации: " + data.error;
+.then(async res => {
+  const text = await res.text();
+  try {
+    const data = JSON.parse(text);
+    if (data.ok) {
+      userId = data.user_id;
+      loadModules();
+    } else {
+      document.getElementById("user-id-display").textContent = `❌ Ошибка авторизации: ${data.error}
+initData: ${initData}`;
+    }
+  } catch (e) {
+    document.getElementById("user-id-display").textContent = `❌ Ответ сервера не JSON:
+${text}
+initData: ${initData}`;
   }
 })
 .catch(err => {
