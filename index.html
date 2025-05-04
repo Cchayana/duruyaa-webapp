@@ -91,6 +91,8 @@
       let initData = "";
       try {
         initData = Telegram.WebApp.initData;
+document.getElementById("user-id-display").textContent = `initData получено:
+${initData}`;
       } catch (e) {
         document.getElementById("user-id-display").textContent = "❌ Telegram WebApp не найден.";
       }
